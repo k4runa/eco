@@ -25,9 +25,9 @@ from colorama import Fore, Style, init
 class Config:
     """Application configuration constants."""
     
-    author: str = "san1ura"
-    version: str = "2.0.6"
-    app_name: str = "sysup"
+    author: str = "k4runa"
+    version: str = "3.0.1"
+    app_name: str = "eco"
     supported_helpers: Tuple[str, ...] = ("yay", "paru")
 
     @property
@@ -711,11 +711,12 @@ class GitRepository:
             capture_output=True
         )
 
-    def has_new_commits(self) -> bool:
+    def has_new_commits(self) -> bool | None:
         """Check if remote repository has new commits."""
         try:
             self._run_git(["fetch"])
             result = self._run_git(["rev-list", "--count", "HEAD..@{u}"])
+            #if result and result.stdout is not None:
             return int(result.stdout.strip()) > 0
         except subprocess.CalledProcessError:
             return False
@@ -728,9 +729,8 @@ class GitRepository:
                 # Capitalize first letter of repo name
                 display_name = self.repo_path.name.capitalize()
                 print(f'[ {Fore.GREEN+Style.BRIGHT}INFO {Fore.RESET}] {Fore.RESET}Available -> {Style.DIM}{display_name}')
-
-                self._run_git(["pull"])
-
+                #self._run_git(["pull"])
+                subprocess.run(["git","pull"],text=True)
                 print(f'[ {Fore.GREEN+Style.BRIGHT}INFO {Fore.RESET}] {Fore.RESET}Updated -> {Style.DIM}{display_name}')
                 self.logger.info(f"Successfully updated {self.repo_path.name}")
                 return True
