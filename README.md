@@ -1,6 +1,6 @@
 # Eco - System Update Manager for Arch Linux
 
-[![Version](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/san1ura/eco)
+[![Version](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/k4runa/eco)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8+-yellow.svg)](https://www.python.org/)
 [![Arch Linux](https://img.shields.io/badge/platform-Arch%20Linux-1793D1.svg)](https://archlinux.org/)
@@ -40,7 +40,7 @@ Using Make:
 
 ```bash
 # Clone the repository
-git clone https://github.com/san1ura/eco.git
+git clone https://github.com/k4runa/eco.git
 cd eco
 
 # System-wide installation (requires sudo)
@@ -79,7 +79,7 @@ Install eco:
 
 ```bash
 # Clone the repository
-git clone https://github.com/san1ura/eco.git
+git clone https://github.com/k4runa/eco.git
 cd eco
 
 # Make the script executable
@@ -310,9 +310,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-**san1ura** - GitHub: [@san1ura](https://github.com/san1ura)
+**k4runa** - GitHub: [@k4runa](https://github.com/k4runa)
 
-Project Link: [https://github.com/san1ura/eco](https://github.com/san1ura/eco)
+Project Link: [https://github.com/k4runa/eco](https://github.com/k4runa/eco)
 
 ---
 
