@@ -1,6 +1,6 @@
-# SysUp - System Update Manager for Arch Linux
+# Eco - System Update Manager for Arch Linux
 
-[![Version](https://img.shields.io/badge/version-2.0.6-blue.svg)](https://github.com/san1ura/sysup)
+[![Version](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/san1ura/eco)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8+-yellow.svg)](https://www.python.org/)
 [![Arch Linux](https://img.shields.io/badge/platform-Arch%20Linux-1793D1.svg)](https://archlinux.org/)
@@ -40,8 +40,8 @@ Using Make:
 
 ```bash
 # Clone the repository
-git clone https://github.com/san1ura/sysup.git
-cd sysup
+git clone https://github.com/san1ura/eco.git
+cd eco
 
 # System-wide installation (requires sudo)
 make install
@@ -53,8 +53,8 @@ make install-user
 Verify Installation:
 
 ```bash
-sysup --version
-sysup --help
+eco --version
+eco --help
 ```
 
 ### Manual Installation
@@ -75,18 +75,18 @@ sudo pacman -S yay   # or paru
 sudo pacman -S flatpak
 ```
 
-Install sysup:
+Install eco:
 
 ```bash
 # Clone the repository
-git clone https://github.com/san1ura/sysup.git
-cd sysup
+git clone https://github.com/san1ura/eco.git
+cd eco
 
 # Make the script executable
 chmod +x main.py
 
 # Optional: Create a symbolic link for easy access
-sudo ln -s "$(pwd)/main.py" /usr/local/bin/sysup
+sudo ln -s "$(pwd)/main.py" /usr/local/bin/eco
 ```
 
 ## Usage
@@ -95,75 +95,75 @@ sudo ln -s "$(pwd)/main.py" /usr/local/bin/sysup
 
 ```bash
 # Update entire system (Pacman + AUR + Flatpak + Git repos)
-sysup --update
+eco --update
 
 # Preview updates without applying (dry run)
-sysup --update --dry-run
+eco --update --dry-run
 
 # Update without confirmation prompts
-sysup --update --noconfirm
+eco --update --noconfirm
 
 # Display system information
-sysup --info
+eco --info
 
 # Show update statistics
-sysup --stats
+eco --stats
 
 # Show current configuration
-sysup --config
+eco --config
 ```
 
 ### Git Repository Management
 
 ```bash
 # Add a Git repository to track
-sysup --add-repo ~/dotfiles
-sysup --add-repo ~/.config/nvim
+eco --add-repo ~/dotfiles
+eco --add-repo ~/.config/nvim
 
 # List all tracked repositories
-sysup --list-repos
+eco --list-repos
 
 # Remove a repository from tracking
-sysup --remove-repo ~/dotfiles
+eco --remove-repo ~/dotfiles
 ```
 
 ### Maintenance Operations
 
 ```bash
 # Clean package cache
-sysup --clear-cache pacman
-sysup --clear-cache flatpak
+eco --clear-cache pacman
+eco --clear-cache flatpak
 
 # Remove orphaned packages
-sysup --clean-orphans
+eco --clean-orphans
 ```
 
 ### Backup Management
 
 ```bash
 # Create a manual backup
-sysup --backup
+eco --backup
 
 # List all available backups
-sysup --list-backups
+eco --list-backups
 ```
 
 ### Scheduled Updates
 
 ```bash
 # Setup automatic daily updates (runs at 2 AM)
-sysup --schedule daily
+eco --schedule daily
 
 # Setup automatic weekly updates (runs at 2 AM on Sundays)
-sysup --schedule weekly
+eco --schedule weekly
 
 # Remove scheduled updates
-sysup --unschedule
+eco --unschedule
 ```
 
 ## Configuration
 
-Configuration file is located at `~/.config/sysup/config.json`
+Configuration file is located at `~/.config/eco/config.json`
 
 ```json
 {
@@ -201,14 +201,14 @@ Configuration file is located at `~/.config/sysup/config.json`
 
 You can execute custom scripts before and after updates by placing executable scripts in:
 
-- **Pre-update hooks**: `~/.config/sysup/hooks/pre-update/`
-- **Post-update hooks**: `~/.config/sysup/hooks/post-update/`
+- **Pre-update hooks**: `~/.config/eco/hooks/pre-update/`
+- **Post-update hooks**: `~/.config/eco/hooks/post-update/`
 
 Example hook script:
 
 ```bash
 #!/bin/bash
-# ~/.config/sysup/hooks/pre-update/backup-database.sh
+# ~/.config/eco/hooks/pre-update/backup-database.sh
 
 echo "Backing up database..."
 mysqldump -u root mydatabase > /backup/db-$(date +%Y%m%d).sql
@@ -218,13 +218,13 @@ echo "Database backup complete!"
 Make the script executable:
 
 ```bash
-chmod +x ~/.config/sysup/hooks/pre-update/backup-database.sh
+chmod +x ~/.config/eco/hooks/pre-update/backup-database.sh
 ```
 
 ## File Structure
 
 ```
-~/.config/sysup/
+~/.config/eco/
 ├── config.json              # User configuration
 ├── repositories.json        # Tracked Git repositories
 ├── statistics.json          # Update statistics
@@ -235,8 +235,8 @@ chmod +x ~/.config/sysup/hooks/pre-update/backup-database.sh
     ├── pre-update/          # Pre-update hook scripts
     └── post-update/         # Post-update hook scripts
 
-~/.local/state/sysup/
-└── sysup.log               # Application logs
+~/.local/state/eco/
+└── eco.log               # Application logs
 ```
 
 ## Statistics
@@ -244,7 +244,7 @@ chmod +x ~/.config/sysup/hooks/pre-update/backup-database.sh
 Track your update history and identify frequently updated packages:
 
 ```bash
-sysup --stats
+eco --stats
 ```
 
 Example output:
@@ -279,7 +279,7 @@ sudo pacman -S libnotify
 ### Webhook Notifications (Discord/Slack)
 
 1. Create a webhook in Discord or Slack
-2. Edit `~/.config/sysup/config.json`:
+2. Edit `~/.config/eco/config.json`:
 
 ```json
 {
@@ -312,7 +312,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 **san1ura** - GitHub: [@san1ura](https://github.com/san1ura)
 
-Project Link: [https://github.com/san1ura/sysup](https://github.com/san1ura/sysup)
+Project Link: [https://github.com/san1ura/eco](https://github.com/san1ura/eco)
 
 ---
 

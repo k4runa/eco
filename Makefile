@@ -1,12 +1,12 @@
-# sysup Makefile
+# eco Makefile
 
 .PHONY: install install-user uninstall uninstall-user clean help
 
 # Default target
 help:
 	@echo "Eco Makefile - Available targets:"
-	@echo "  make install        - Install sysup system-wide (requires sudo)"
-	@echo "  make install-user   - Install sysup for current user only"
+	@echo "  make install        - Install eco system-wide (requires sudo)"
+	@echo "  make install-user   - Install eco for current user only"
 	@echo "  make uninstall      - Uninstall system-wide installation"
 	@echo "  make uninstall-user - Uninstall user installation"
 	@echo "  make clean          - Remove temporary files"
@@ -18,8 +18,8 @@ install:
 	@echo "Installing eco to /usr/local/bin..."
 	sudo install -Dm755 main.py /usr/local/bin/eco
 	@echo ""
-	@echo "✓ sysup installed successfully!"
-	@echo "  Run 'ecp --version' to verify installation"
+	@echo "✓ eco installed successfully!"
+	@echo "  Run 'eco --version' to verify installation"
 	@echo "  Run 'eco --help' to see available options"
 
 # User-only installation (no sudo needed)
@@ -30,10 +30,10 @@ install-user:
 	mkdir -p $(HOME)/.local/bin
 	install -Dm755 main.py $(HOME)/.local/bin/eco
 	@echo ""
-	@echo "✓ sysup installed to ~/.local/bin/sysup"
+	@echo "✓ eco installed to ~/.local/bin/eco"
 	@echo "  Make sure ~/.local/bin is in your PATH"
 	@echo "  Add this to your ~/.bashrc or ~/.zshrc if needed:"
-	@echo "    export PATH=\"\$$HOME/.local/bin:\$$PATH\""
+	@echo "    export PATH=\"$$HOME/.local/bin:$$PATH\""
 	@echo ""
 	@echo "  Run 'eco --version' to verify installation"
 	@echo "  Run 'eco --help' to see available options"
@@ -41,13 +41,13 @@ install-user:
 # Uninstall system-wide installation
 uninstall:
 	@echo "Removing system-wide installation..."
-	sudo rm -f /usr/local/bin/sysup
+	sudo rm -f /usr/local/bin/eco
 	@echo "✓ eco uninstalled successfully!"
 
 # Uninstall user installation
 uninstall-user:
 	@echo "Removing user installation..."
-	rm -f $(HOME)/.local/bin/sysup
+	rm -f $(HOME)/.local/bin/eco
 	@echo "✓ eco uninstalled successfully!"
 
 # Clean temporary files

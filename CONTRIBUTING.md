@@ -1,6 +1,6 @@
-# Contributing to sysup
+# Contributing to eco
 
-First off, thank you for considering contributing to sysup! 🎉
+First off, thank you for considering contributing to eco! 🎉
 
 ## How Can I Contribute?
 
@@ -12,8 +12,8 @@ Before creating bug reports, please check the existing issues to avoid duplicate
 - **Describe the exact steps to reproduce the problem**
 - **Provide specific examples**
 - **Describe the behavior you observed and what you expected**
-- **Include logs** from `~/.local/state/sysup/sysup.log`
-- **Mention your system info** (`sysup --info`)
+- **Include logs** from `~/.local/state/eco/eco.log`
+- **Mention your system info** (`eco --info`)
 
 ### Suggesting Enhancements
 
@@ -69,8 +69,8 @@ Before submitting a PR:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/sysup.git
-cd sysup
+git clone https://github.com/YOUR_USERNAME/eco.git
+cd eco
 
 # Create a virtual environment (optional but recommended)
 python -m venv venv
@@ -80,17 +80,17 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Make the script executable
-chmod +x sysup.py
+chmod +x main.py
 
 # Run the script
-./sysup.py --help
+./main.py --help
 ```
 
 ## Project Structure
 
 ```
-sysup/
-├── sysup.py              # Main script
+eco/
+├── main.py              # Main script
 ├── README.md             # Documentation
 ├── LICENSE               # MIT License
 ├── requirements.txt      # Python dependencies
