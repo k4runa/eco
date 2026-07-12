@@ -40,11 +40,7 @@ env/
 # Logs
 *.log
 
-# Test files
-test_*.py
-*_test.py
-
-# Personal configuration 
+# Personal configuration
 config.json
 repositories.json
 statistics.json

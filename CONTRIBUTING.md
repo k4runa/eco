@@ -13,7 +13,7 @@ Before creating bug reports, please check the existing issues to avoid duplicate
 - **Provide specific examples**
 - **Describe the behavior you observed and what you expected**
 - **Include logs** from `~/.local/state/eco/eco.log`
-- **Mention your system info** (`eco --info`)
+- **Mention your system info** (`uname -a`, `python --version`)
 
 ### Suggesting Enhancements
 
@@ -90,12 +90,20 @@ chmod +x main.py
 
 ```
 eco/
-├── main.py              # Main script
-├── README.md             # Documentation
-├── LICENSE               # MIT License
-├── requirements.txt      # Python dependencies
-├── .gitignore           # Git ignore rules
-└── CONTRIBUTING.md      # This file
+├── main.py              # Dev entry point (./main.py)
+├── pyproject.toml       # Packaging + `eco` console script
+├── requirements.txt     # Runtime dependency (rich)
+├── Makefile             # install / uninstall / run helpers
+├── README.md            # Documentation
+├── LICENSE              # MIT License
+├── CONTRIBUTING.md      # This file
+└── eco/                 # The package
+    ├── cli.py           # Argument parsing & dispatch
+    ├── updater.py       # Two-phase update flow + live UI
+    ├── console.py       # Theme, symbols, banner
+    ├── config.py        # Paths + user config
+    ├── stats.py hooks.py notify.py scheduler.py
+    └── sources/         # pacman, aur, flatpak, git update sources
 ```
 
 ## Questions?
