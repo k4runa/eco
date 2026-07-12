@@ -1,59 +1,39 @@
 # eco Makefile
 
-.PHONY: install install-user uninstall uninstall-user clean help
+.PHONY: help install install-user uninstall clean run
 
-# Default target
 help:
-	@echo "Eco Makefile - Available targets:"
-	@echo "  make install        - Install eco system-wide (requires sudo)"
-	@echo "  make install-user   - Install eco for current user only"
-	@echo "  make uninstall      - Uninstall system-wide installation"
-	@echo "  make uninstall-user - Uninstall user installation"
-	@echo "  make clean          - Remove temporary files"
+	@echo "eco - available targets:"
+	@echo "  make install    - install eco with pipx (isolated, recommended)"
+	@echo "  make install-user - install into the user site with pip"
+	@echo "  make uninstall  - remove eco"
+	@echo "  make run        - run from the source tree (./main.py --help)"
+	@echo "  make clean      - remove build/cache artifacts"
 
-# System-wide installation (requires sudo)
+# Recommended: pipx gives an isolated environment and a clean `eco` command.
 install:
-	@echo "Installing dependencies..."
-	pip install -r requirements.txt --break-system
-	@echo "Installing eco to /usr/local/bin..."
-	sudo install -Dm755 main.py /usr/local/bin/eco
+	@command -v pipx >/dev/null 2>&1 || { \
+		echo "pipx not found. Install it with: sudo pacman -S python-pipx"; exit 1; }
+	pipx install --force .
 	@echo ""
-	@echo "✓ eco installed successfully!"
-	@echo "  Run 'eco --version' to verify installation"
-	@echo "  Run 'eco --help' to see available options"
+	@echo "Installed. Run 'eco --help' to get started."
 
-# User-only installation (no sudo needed)
+# Fallback: user-site install (Arch marks the base env externally-managed, so
+# --break-system-packages is required for a user install there).
 install-user:
-	@echo "Installing dependencies for user..."
-	pip install --user -r requirements.txt
-	@echo "Installing eco to ~/.local/bin..."
-	mkdir -p $(HOME)/.local/bin
-	install -Dm755 main.py $(HOME)/.local/bin/eco
+	pip install --user --break-system-packages .
 	@echo ""
-	@echo "✓ eco installed to ~/.local/bin/eco"
-	@echo "  Make sure ~/.local/bin is in your PATH"
-	@echo "  Add this to your ~/.bashrc or ~/.zshrc if needed:"
-	@echo "    export PATH=\"$$HOME/.local/bin:$$PATH\""
-	@echo ""
-	@echo "  Run 'eco --version' to verify installation"
-	@echo "  Run 'eco --help' to see available options"
+	@echo "Installed to the user site. Ensure ~/.local/bin is on your PATH."
 
-# Uninstall system-wide installation
 uninstall:
-	@echo "Removing system-wide installation..."
-	sudo rm -f /usr/local/bin/eco
-	@echo "✓ eco uninstalled successfully!"
+	@command -v pipx >/dev/null 2>&1 && pipx uninstall eco || \
+		pip uninstall -y eco || true
 
-# Uninstall user installation
-uninstall-user:
-	@echo "Removing user installation..."
-	rm -f $(HOME)/.local/bin/eco
-	@echo "✓ eco uninstalled successfully!"
+run:
+	./main.py --help
 
-# Clean temporary files
 clean:
-	@echo "Cleaning temporary files..."
-	find . -type f -name '*.pyc' -delete
-	find . -type d -name '__pycache__' -delete
-	find . -type d -name '*.egg-info' -exec rm -rf {} + 2>/dev/null || true
-	@echo "✓ Cleanup complete!"
+	find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name '*.py[co]' -delete
+	rm -rf build dist *.egg-info
+	@echo "Clean."
