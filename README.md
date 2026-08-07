@@ -9,7 +9,8 @@ One command to update **Pacman**, an **AUR helper** (paru/yay), **Flatpak** and 
 tracked **Git repos** — behind a single, honest, animated terminal UI. Update all
 of them, or just the one you care about: `eco --update aur`.
 
-Checks run read-only and in parallel behind a live status board; updates then run
+Checks run read-only and in parallel behind a live status board; you then pick
+what to apply (`all`, or `pacman aur`, or `none`) and updates run
 one at a time with the real tool attached to your terminal, so prompts and output
 behave normally and the result you see is the one pacman/yay/git actually reported.
 

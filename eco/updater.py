@@ -19,7 +19,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from rich.live import Live
-from rich.prompt import Confirm
+from rich.prompt import Confirm, Prompt
 from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
@@ -120,6 +120,49 @@ def _run_checks(rows: list[_Row]) -> None:
         live.update(_board(rows))
 
 
+def _choose_sources(pending: list[_Row]) -> list[_Row]:
+    """Ask which of the pending sources to update. Empty result means cancel.
+
+    With a single pending source a yes/no question is clearer than a one-item
+    menu; otherwise the sources are listed by name and any subset can be picked
+    (``pacman aur``), along with ``all`` and ``none``.
+    """
+    if len(pending) == 1:
+        row = pending[0]
+        ok = Confirm.ask(
+            f"[eco.heading]Apply updates to {row.source.display} "
+            f"({row.result.count} item(s))?[/]",
+            default=True,
+        )
+        return pending if ok else []
+
+    # The status board directly above already lists every pending source with
+    # its count, so the prompt only has to name the keys.
+    names = [row.source.name for row in pending]
+    total = sum(row.result.count for row in pending)
+    options = ["all", *names, "none"]
+    while True:
+        answer = Prompt.ask(
+            f"[eco.heading]Update which?[/] [eco.muted]({'/'.join(options)}, "
+            f"{total} item(s) in total)[/]",
+            default="all",
+        )
+        answer = answer.strip().lower()
+        if answer in ("all", "a", "y", "yes"):
+            return pending
+        if answer in ("none", "no", "n", "q", "quit", "cancel"):
+            return []
+        picked = [item for item in answer.replace(",", " ").split() if item]
+        unknown = [item for item in picked if item not in names]
+        if picked and not unknown:
+            # Keep the canonical order, not the order they were typed in.
+            return [row for row in pending if row.source.name in picked]
+        ui.err(
+            f"Pick from: {', '.join(options)} "
+            f"(several at once is fine: {names[0]} {names[1]})"
+        )
+
+
 def run_update(
     paths: Paths,
     cfg: UserConfig,
@@ -178,13 +221,12 @@ def run_update(
 
     console.print()
     if not noconfirm:
-        if not Confirm.ask(
-            f"[eco.heading]Apply updates to {len(pending)} source(s) "
-            f"({total} item(s))?[/]",
-            default=True,
-        ):
+        chosen = _choose_sources(pending)
+        if not chosen:
             ui.warn("Cancelled.")
             return
+        pending = chosen
+        total = sum(row.result.count for row in pending)
 
     stats = Statistics(paths)
     notifier = Notifier(cfg)
