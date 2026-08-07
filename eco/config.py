@@ -63,6 +63,9 @@ class Paths:
 #: every update source eco knows about, in the order they run
 ALL_SOURCES = ("pacman", "aur", "flatpak", "git")
 
+#: AUR helpers eco can drive, in the order they are auto-detected
+AUR_HELPERS = ("paru", "yay")
+
 
 @dataclass
 class UserConfig:
@@ -72,11 +75,16 @@ class UserConfig:
     per-invocation decisions and live only as CLI flags; desktop notifications
     are implied by ``notify-send`` being installed; a webhook is implied by
     ``webhook_url`` being set.
+
+    ``sources`` is the *default* selection; a single run can narrow it further
+    with ``eco --update pacman aur``.
     """
 
     sources: list[str] = field(default_factory=lambda: list(ALL_SOURCES))
     excluded_packages: list[str] = field(default_factory=list)
     webhook_url: str | None = None
+    #: which AUR helper to use; ``None`` means auto-detect (paru, then yay)
+    aur_helper: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {f.name: getattr(self, f.name) for f in fields(self)}
@@ -116,7 +124,24 @@ class UserConfig:
             value = raw if raw.lower() not in ("none", "null", "") else None
         else:
             value = raw
+        self._validate(key, value)
         setattr(self, key, value)
+
+    @staticmethod
+    def _validate(key: str, value: Any) -> None:
+        """Reject values eco could never honour, at the point they are set."""
+        if key == "sources":
+            unknown = [name for name in value if name not in ALL_SOURCES]
+            if unknown:
+                raise ValueError(
+                    f"unknown source(s): {', '.join(unknown)} "
+                    f"(known: {', '.join(ALL_SOURCES)})"
+                )
+        elif key == "aur_helper" and value is not None and value not in AUR_HELPERS:
+            raise ValueError(
+                f"unknown AUR helper '{value}' (known: {', '.join(AUR_HELPERS)}; "
+                f"use 'none' to auto-detect)"
+            )
 
 
 class ConfigManager:

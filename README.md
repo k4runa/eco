@@ -5,8 +5,9 @@
 [![Python](https://img.shields.io/badge/python-3.9+-yellow.svg)](https://www.python.org/)
 [![Arch](https://img.shields.io/badge/Arch%20Linux-1793D1.svg)](https://archlinux.org/)
 
-One command to update **Pacman**, an **AUR helper** (yay/paru), **Flatpak** and your
-tracked **Git repos** — behind a single, honest, animated terminal UI.
+One command to update **Pacman**, an **AUR helper** (paru/yay), **Flatpak** and your
+tracked **Git repos** — behind a single, honest, animated terminal UI. Update all
+of them, or just the one you care about: `eco --update aur`.
 
 Checks run read-only and in parallel behind a live status board; updates then run
 one at a time with the real tool attached to your terminal, so prompts and output
@@ -28,6 +29,8 @@ make install-user     # into the user site, or just run ./main.py
 
 ```bash
 eco --update                 # update everything (asks first)
+eco --update aur             # update only the AUR
+eco --update pacman flatpak  # update only these, ignoring the config
 eco --update --dry-run       # preview only, change nothing
 eco --update --noconfirm     # no prompts
 
@@ -51,19 +54,24 @@ eco --config                 # show settings
 {
   "sources": ["pacman", "aur", "flatpak", "git"],
   "excluded_packages": [],
-  "webhook_url": null
+  "webhook_url": null,
+  "aur_helper": null
 }
 ```
 
-- **sources** — what to update; drop an entry to skip it (missing tools skip themselves).
+- **sources** — the default set to update; drop an entry to skip it (missing tools
+  skip themselves). Naming sources on the command line (`eco --update aur`)
+  overrides this for that run.
 - **excluded_packages** — passed straight to pacman/AUR as `--ignore`.
 - **webhook_url** — set it to also notify a Discord/Slack webhook (payload auto-detected).
+- **aur_helper** — `paru` or `yay`; `null` auto-detects (paru first, then yay).
 
 Edit the file or use `eco --set key=value` (comma-separate lists):
 
 ```bash
 eco --set sources=pacman,aur
 eco --set excluded_packages=linux,nvidia
+eco --set aur_helper=yay          # or: aur_helper=none to auto-detect again
 ```
 
 `--noconfirm`/`--dry-run` are CLI-only; desktop notifications are on when

@@ -14,6 +14,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from .. import APP_NAME
 from ..config import Paths
 from .base import ApplyResult, CheckResult, UpdateSource, which
 
@@ -137,6 +138,11 @@ class GitSource(UpdateSource):
 
     def supported(self) -> bool:
         return which("git") and bool(self.store.load())
+
+    def unavailable_reason(self) -> str:
+        if not which("git"):
+            return "git is not installed"
+        return f"no repositories tracked (add one with: {APP_NAME} --add-repo PATH)"
 
     def check(self) -> CheckResult:
         if not which("git"):

@@ -87,3 +87,7 @@ class UpdateSource(ABC):
     @abstractmethod
     def apply(self, *, noconfirm: bool, excluded: list[str]) -> ApplyResult:
         """Apply available updates. Assumes :meth:`check` reported some."""
+
+    def unavailable_reason(self) -> str:
+        """Why :meth:`supported` said no -- shown when this source was asked for."""
+        return "required tooling is not installed"

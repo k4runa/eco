@@ -11,7 +11,7 @@ from rich.table import Table
 
 from . import APP_NAME, AUTHOR, __version__
 from . import console as ui
-from .config import ConfigManager, Paths, UserConfig
+from .config import ALL_SOURCES, ConfigManager, Paths, UserConfig
 from .console import console
 from .scheduler import Scheduler
 from .sources.base import passthrough, which
@@ -126,15 +126,27 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=(
             f"Examples:\n"
             f"  {APP_NAME} --update                 update everything\n"
+            f"  {APP_NAME} --update aur             update only the AUR\n"
+            f"  {APP_NAME} --update pacman aur      update only those two\n"
             f"  {APP_NAME} --update --dry-run       preview only\n"
             f"  {APP_NAME} --add-repo ~/dotfiles    track a git repo\n"
-            f"  {APP_NAME} --set sources=pacman,aur  choose what to update\n"
+            f"  {APP_NAME} --set sources=pacman,aur  choose the default set\n"
+            f"  {APP_NAME} --set aur_helper=yay     pick the AUR helper\n"
             f"  {APP_NAME} --schedule daily         auto-update at 02:00\n\n"
             f"v{__version__} by {AUTHOR}"
         ),
     )
     g = parser.add_argument_group("Updates")
-    g.add_argument("--update", action="store_true", help="update pacman, AUR, flatpak and git repos")
+    g.add_argument(
+        "--update",
+        nargs="*",
+        metavar="SOURCE",
+        choices=ALL_SOURCES,
+        help=(
+            "update everything enabled in the config, or only the given "
+            f"source(s): {', '.join(ALL_SOURCES)}"
+        ),
+    )
     g.add_argument("--dry-run", action="store_true", help="show what would be updated, change nothing")
     g.add_argument("--noconfirm", action="store_true", help="skip confirmation prompts")
 
@@ -171,9 +183,30 @@ def setup_logging(paths: Paths) -> None:
     )
 
 
+def _parse(parser: argparse.ArgumentParser, argv: list[str] | None) -> argparse.Namespace:
+    """Parse *argv*, tolerating source names that trail other flags.
+
+    ``--update`` swallows the sources that follow it, so ``eco --update aur``
+    works but ``eco --update --dry-run aur`` would otherwise be rejected. Any
+    leftover argument that is a known source name is folded into the selection.
+    """
+    args, extra = parser.parse_known_args(argv)
+    if extra:
+        unknown = [item for item in extra if item not in ALL_SOURCES]
+        if unknown:
+            parser.error(f"unrecognized arguments: {' '.join(unknown)}")
+        if args.update is None:
+            parser.error(
+                f"source name(s) given without --update "
+                f"(did you mean: {APP_NAME} --update {' '.join(extra)}?)"
+            )
+        args.update = list(args.update) + [s for s in extra if s not in args.update]
+    return args
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args(argv)
+    args = _parse(parser, argv)
 
     if not which("pacman"):
         ui.err("eco targets Arch Linux and Arch-based distributions (pacman not found).")
@@ -199,14 +232,23 @@ def main(argv: list[str] | None = None) -> int:
                 except KeyError:
                     ui.err(f"Unknown setting '{key.strip()}'")
                     return 1
+                except ValueError as error:
+                    ui.err(f"Invalid value for '{key.strip()}': {error}")
+                    return 1
             config_manager.save(cfg)
             ui.ok("Configuration updated.")
             show_config(cfg)
             return 0
 
-        if args.update:
+        if args.update is not None:
             ui.banner(__version__)
-            run_update(paths, cfg, noconfirm=noconfirm, dry_run=args.dry_run)
+            run_update(
+                paths,
+                cfg,
+                noconfirm=noconfirm,
+                dry_run=args.dry_run,
+                selected=args.update or None,
+            )
         elif args.stats:
             show_stats(paths)
         elif args.config:

@@ -25,7 +25,7 @@ from rich.table import Table
 from rich.text import Text
 
 from . import console as ui
-from .config import Paths, UserConfig
+from .config import ALL_SOURCES, Paths, UserConfig
 from .console import console
 from .hooks import Hooks
 from .notify import Notifier
@@ -48,14 +48,25 @@ class _Row:
     result: CheckResult | None = None
 
 
-def _enabled_sources(paths: Paths, cfg: UserConfig) -> list[UpdateSource]:
+def _enabled_sources(
+    paths: Paths, cfg: UserConfig, selected: list[str] | None = None
+) -> tuple[list[UpdateSource], list[UpdateSource]]:
+    """Resolve which sources to run, in canonical order.
+
+    *selected* is an explicit per-run choice (``eco --update pacman aur``) and
+    overrides ``cfg.sources``; without it the configured set is used. Returns
+    ``(usable, unusable)`` -- the second list holds sources that were asked for
+    but whose tooling is missing, so the caller can say so out loud.
+    """
     everything: list[UpdateSource] = [
         PacmanSource(),
-        AurSource(),
+        AurSource(cfg.aur_helper),
         FlatpakSource(),
         GitSource(paths),
     ]
-    return [s for s in everything if s.name in cfg.sources and s.supported()]
+    wanted = selected if selected is not None else list(cfg.sources)
+    chosen = [s for s in everything if s.name in wanted]
+    return [s for s in chosen if s.supported()], [s for s in chosen if not s.supported()]
 
 
 def _status_cell(row: _Row) -> Text | Spinner:
@@ -110,13 +121,33 @@ def _run_checks(rows: list[_Row]) -> None:
 
 
 def run_update(
-    paths: Paths, cfg: UserConfig, *, noconfirm: bool = False, dry_run: bool = False
+    paths: Paths,
+    cfg: UserConfig,
+    *,
+    noconfirm: bool = False,
+    dry_run: bool = False,
+    selected: list[str] | None = None,
 ) -> None:
-    logger.info("Update run started (dry_run=%s)", dry_run)
-    sources = _enabled_sources(paths, cfg)
+    logger.info("Update run started (dry_run=%s, selected=%s)", dry_run, selected or "config")
+    sources, unusable = _enabled_sources(paths, cfg, selected)
+    for source in unusable:
+        # Missing tools skip themselves quietly on a normal run; if the source
+        # was asked for by name, say why nothing happened.
+        if selected:
+            ui.warn(f"{source.display}: {source.unavailable_reason()} -- skipped")
+        else:
+            logger.info("%s unavailable: %s", source.name, source.unavailable_reason())
     if not sources:
-        ui.warn("No enabled update sources are available on this system.")
+        if selected:
+            ui.warn(f"None of the requested source(s) are usable: {', '.join(selected)}")
+        else:
+            ui.warn("No enabled update sources are available on this system.")
         return
+
+    if selected:
+        ui.muted(f"Only updating: {', '.join(s.name for s in sources)}")
+    elif len(cfg.sources) < len(ALL_SOURCES):
+        ui.muted(f"Disabled in config: {', '.join(n for n in ALL_SOURCES if n not in cfg.sources)}")
 
     ui.rule("Checking for updates")
     rows = [_Row(source) for source in sources]
