@@ -1,6 +1,6 @@
 # 🌱 eco
 
-[![Version](https://img.shields.io/badge/version-1.0.0-4ec9b0.svg)](https://github.com/k4runa/eco)
+[![Version](https://img.shields.io/badge/version-1.1.0-4ec9b0.svg)](https://github.com/k4runa/eco)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9+-yellow.svg)](https://www.python.org/)
 [![Arch](https://img.shields.io/badge/Arch%20Linux-1793D1.svg)](https://archlinux.org/)
