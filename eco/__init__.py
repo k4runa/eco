@@ -10,4 +10,4 @@ __all__ = ["__version__", "APP_NAME", "AUTHOR"]
 
 __version__ = "1.1.0"
 APP_NAME = "eco"
-AUTHOR = "k4runa"
+AUTHOR = "gal1ce"

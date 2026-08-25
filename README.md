@@ -1,6 +1,6 @@
 # 🌱 eco
 
-[![Version](https://img.shields.io/badge/version-1.1.0-4ec9b0.svg)](https://github.com/k4runa/eco)
+[![Version](https://img.shields.io/badge/version-1.1.0-4ec9b0.svg)](https://github.com/gal1ce/eco)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9+-yellow.svg)](https://www.python.org/)
 [![Arch](https://img.shields.io/badge/Arch%20Linux-1793D1.svg)](https://archlinux.org/)
@@ -21,7 +21,7 @@ Needs Arch (`pacman`), Python 3.9+, `pacman-contrib` and `rich`
 notify-send are optional.
 
 ```bash
-git clone https://github.com/k4runa/eco.git && cd eco
+git clone https://github.com/gal1ce/eco.git && cd eco
 make install          # via pipx (sudo pacman -S python-pipx), or:
 make install-user     # into the user site, or just run ./main.py
 ```
@@ -85,4 +85,4 @@ name order around updates.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). By [**k4runa**](https://github.com/k4runa). ⭐ if it helps.
+MIT — see [LICENSE](LICENSE). By [**gal1ce**](https://github.com/gal1ce). ⭐ if it helps.
